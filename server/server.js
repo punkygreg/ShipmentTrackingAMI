@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const PORT = 3333;
+const PORT = 3335;
 //const controller = require('./controllers');
 //const { Token } = require('acorn');
 
@@ -31,30 +31,30 @@ const optionsP= {
 fetch('https://api.terminal49.com/v2/tracking_requests', optionsP)
 .then(res => res.json())
 .then(res => console.log(res))
-.then(console.log(("POD ETA:", data.data.attributes.pod_eta_at)))
 .catch(err => console.error(err));
 
 //GET ETA
 const optionsG =  {
   method: 'GET',
   headers: {Authorization: 'Token MJM2Ler3McaDUHcErMxCqMVo', 'Content-Type': 'application/vnd.api+json'},
-  // body: JSON.stringify({
-  //   data: {
-  //     attributes: {
-  //       pod_eta_at,
-  //       pod_original_eta_at,
-  //       destination_eta_at
+  body: JSON.stringify({
+    data: {
+      // attributes: {
+      //   pod_eta_at,
+      //   pod_original_eta_at,
+      //   destination_eta_at
 
-  //     },
-  //     // relationships: {customer: {data: {id: 'f7cb530a-9e60-412c-a5bc-205a2f34ba54', type: 'party'}}},
-  //     type: 'tracking_request'
-  //   }
-  // })
+      // },
+      // relationships: {customer: {data: {id: 'f7cb530a-9e60-412c-a5bc-205a2f34ba54', type: 'party'}}},
+      type: 'tracking_request'
+    }
+  })
 }
 
 fetch('https://api.terminal49.com/v2/shipments/3c6eea72-0897-4de2-8e98-ecbb63420172', optionsG)
 .then(res => res.json())
 .then(res => console.log(res))
+// .then(console.log(("POD ETA:", body.data.attributes.pod_eta_at)))
 .catch(err => console.error(err));
 
 
