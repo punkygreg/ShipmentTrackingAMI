@@ -3,14 +3,24 @@ const app = express();
 const path = require('path');
 const PORT = 3000;
 const controller = require('./controllers');
+const { Token } = require('acorn');
 
 
 app.use('/build', express.static(path.join(__dirname, '../build')));
 
 //API Call
-app.get('./', controller.apiCall, (req, res) => {
-  return res.status(200).send(res);
-})
+// app.get('./', controller.apiCall, (req, res) => {
+//   return res.status(200).send(res);
+// })
+const options = {method: 'GET', headers: {Authorization: 'Token MJM2Ler3McaDUHcErMxCqMVo'}};
+
+//API direct CALL
+fetch('https://api.terminal49.com/v2/tracking_requests', options)
+.then(res => res.json())
+.then(res => console.log(res))
+.catch(err => console.error(err));
+
+
 
 // global error handler
 app.use((err, req, res, next) => {
