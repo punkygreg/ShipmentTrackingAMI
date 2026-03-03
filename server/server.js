@@ -5,8 +5,10 @@ const PORT = 3000;
 const controller = require('./controllers');
 
 
+app.use('/build', express.static(path.join(__dirname, '../build')));
+
 //API Call
-app.get('/', controller.apiCall, (req, res) => {
+app.get('./', controller.apiCall, (req, res) => {
   return res.status(200).send(res);
 })
 
