@@ -3,72 +3,23 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const PORT = 3335;
-//const controller = require('./controllers');
-//const { Token } = require('acorn');
+const controller = require('./controllers');
+const powerbiController = require('./powerbiController');
 
 
 app.use('/build', express.static(path.join(__dirname, '../build')));
+app.use(express.json());
 
-//Listing paramaters for API call
-const optionsP= {
-  method: 'POST',
-  headers: {Authorization: `Token ${process.env.TERMINAL49_API_KEY}`, 'Content-Type': 'application/json'},
-  body: JSON.stringify({
-    data: {
-      attributes: {
-        request_type: 'bill_of_lading',
-        request_number: 'CMDULHV3925105',
-        ref_numbers: ['8157US306035655', 'UA1710955', 'UA1710955'],
-        // shipment_tags: ['camembert'],
-        scac: 'CMDU'
-      },
-      // relationships: {customer: {data: {id: 'f7cb530a-9e60-412c-a5bc-205a2f34ba54', type: 'party'}}},
-      type: 'tracking_request'
-    }
-  })
-};
+// Terminal49 Routes
+app.post('/api/tracking_requests', controller.createTrackingRequest);
+app.get('/api/shipments/:shipmentId/eta', controller.getShipmentEta);
 
-//API CALL
-fetch('https://api.terminal49.com/v2/tracking_requests', optionsP)
-.then(res => res.json())
-.then(res => console.log(res))
-.catch(err => console.error(err));
-
-// GET terminal ETA by shipment ID
-app.get('/api/shipments/:shipmentId/eta', async (req, res) => {
-  const { shipmentId } = req.params;
-
-  try {
-    const response = await fetch(`https://api.terminal49.com/v2/shipments/${shipmentId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Token ${process.env.TERMINAL49_API_KEY}`,
-        'Content-Type': 'application/vnd.api+json'
-      }
-    });
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: `Terminal49 API error: ${response.statusText}` });
-    }
-
-    const json = await response.json();
-    const attrs = json.data.attributes;
-
-    res.json({
-      shipment_id: shipmentId,
-      pod_eta_at: attrs.pod_eta_at,
-      pod_ata_at: attrs.pod_ata_at,
-      pod_original_eta_at: attrs.pod_original_eta_at,
-      destination_eta_at: attrs.destination_eta_at,
-      destination_ata_at: attrs.destination_ata_at,
-      pod_timezone: attrs.pod_timezone,
-      destination_timezone: attrs.destination_timezone
-    });
-  } catch (err) {
-    console.error('Error fetching shipment ETA:', err);
-    res.status(500).json({ error: 'Failed to fetch shipment ETA' });
-  }
-});
+// Power BI Routes
+// app.put('/api/powerbi/rows', powerbiController.putRows);
+app.patch('/api/powerbi/rows', powerbiController.patchRows);
+app.patch('/api/powerbi/pod-eta', powerbiController.updatePodEta);
+app.post('/api/powerbi/query', powerbiController.executeQuery);
+app.get('/api/powerbi/tables', powerbiController.getTables);
 
 
 // global error handler
